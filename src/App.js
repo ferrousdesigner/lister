@@ -19,7 +19,11 @@ function App() {
       if (user) {
         // User is signed in.
         console.log("User", user);
-        const docRef = doc(db, "user_tasks", user.uid);
+        const docRef = doc(
+          db,
+          process.NODE_ENV === "production" ? "tasks" : "tasks_dev",
+          user.uid
+        );
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
           let tasks = docSnap.data();
@@ -66,11 +70,11 @@ function App() {
     if (!user) return;
     setSaving(true);
     if (tasks) {
-      await setDoc(doc(db, "user_tasks", user.uid), {
+      await setDoc(doc(db, process.NODE_ENV === 'production' ? "tasks" : 'tasks_dev', user.uid), {
         tasks: tasks,
       });
     } else {
-      
+
     }
 
     setSaving(false);

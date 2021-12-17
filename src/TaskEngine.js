@@ -361,7 +361,7 @@ export default function TaskEngine({
             {!user && (
               <div style={{ marginRight: 10 }}>
                 {" "}
-                Sign in to access your lists from any device{" "}
+                To auto save and sync{" "}
               </div>
             )}
             <div
