@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
+import ReactDOM from "react-dom";
 import "./TaskEngine.css";
 const maxTask = 25;
 const maxItems = 25;
 
 const scrollToBottom = (id) => {
   var objDiv = document.getElementById(id);
-  objDiv.scrollTop = objDiv.scrollHeight;
+  if (!objDiv) return 
+   objDiv.scrollTop = objDiv.scrollHeight;
 };
 export function DeleteButton(props) {
   const [step, setStep] = useState(1);
@@ -41,10 +43,12 @@ export function DeleteButton(props) {
   );
 }
 export function TaskElement(props) {
-  const { task, onDeleteItem } = props;
+  const { task, onDeleteItem, setShowAmount, showAmount } = props;
   const noTasks = task?.lists && task?.lists.length === 0;
   const [showForm, setShowForm] = useState(null);
+
   const [input, setInput] = useState(null);
+  const [amount, setAmount] = useState(0);
   const keyFunc = (event) => {
     // Number 13 is the "Enter" key on the keyboard
     if (event.keyCode === 13) {
@@ -58,7 +62,75 @@ export function TaskElement(props) {
       // Trigger the button element with a click
     }
   };
-
+  const content = (
+    <div className="actions">
+      {showForm && (
+        <div className="action-row">
+          <h4>Item</h4>
+          {showForm && (
+            <input
+              onKeyUp={keyFunc}
+              className="task-input task-input-2"
+              onChange={(e) => setInput(e.target.value)}
+              value={input || ""}
+              autoFocus
+            />
+          )}
+          {showAmount && <h4>Amount</h4>}
+          {showAmount && (
+            <input
+              onKeyUp={keyFunc}
+              className="task-input task-input-2 task-input-3"
+              onChange={(e) => setAmount(e.target.value)}
+              value={amount || 0}
+            />
+          )}
+        </div>
+      )}
+      <div>
+        {!showForm && (
+          <DeleteButton
+            label="Delete Task"
+            setWarn={props.setWarn}
+            onDelete={() => {
+              props.onSelectTask();
+              setTimeout(() => props.onDeleteTask(task.id), 600);
+            }}
+          />
+        )}
+        {showForm && (
+          <button className="add-task" onClick={() => setShowForm()}>
+            Cancel
+          </button>
+        )}
+        {!showForm && (
+          <button
+            className="add-task"
+            onClick={() =>
+              task?.lists?.length >= maxItems ? null : setShowForm("task")
+            }
+          >
+            + Add Item
+          </button>
+        )}
+        {showForm === "task" && (
+          <button
+            type="submit"
+            className="add-task alt-btn alt-btn-2"
+            onClick={() => {
+              if (task?.lists.length >= maxItems)
+                props.showAlert("Max limit reached.", "error");
+              else {
+                props.onUpdateList(task.id, { name: input, amount: amount });
+              }
+            }}
+          >
+            Save
+          </button>
+        )}
+      </div>
+    </div>
+  );
   return (
     <div>
       <h1 className="flex">
@@ -67,6 +139,14 @@ export function TaskElement(props) {
           onClick={() => props.onSelectTask()}
         />
         {props?.task?.task}{" "}
+        {showAmount && props?.task?.lists && props?.task?.lists
+            ?.map((l) => l.amount).length > 0 && <span>
+          (₹
+          {props?.task?.lists
+            ?.map((l) => l.amount)
+            ?.reduce((a, b) => Number(a) + Number(b))}
+          )
+        </span>}
         <span className="status-chip">
           Task{" "}
           {props?.task?.status === "completed"
@@ -76,6 +156,15 @@ export function TaskElement(props) {
             : "In Progress"}
         </span>
       </h1>
+      <div className="toggle">
+        <button
+          onClick={() => setShowAmount(!showAmount)}
+          className={showAmount ? "toggle-btn toggle-active" : "toggle-btn"}
+        >
+          <div className="inner-circle" />
+        </button>
+        {showAmount ? "Hide Amount" : "Show Amount"}
+      </div>
       <div className="appear">
         {["completed", "in_progress"].includes(props?.task?.status) && (
           <button
@@ -111,73 +200,32 @@ export function TaskElement(props) {
           <div className="tasks-container-top-shadow list-container-top-shadow" />
           {task?.lists.map((t, i) => {
             return (
-              <p className="list-item" key={i}>
-                {t}{" "}
+              <p
+                className="list-item"
+                key={i}
+                onClick={() => {
+                  setAmount(t.amount);
+                  setInput(t.name);
+                  setShowForm("task");
+                }}
+              >
+                {t?.name}{" "}
                 <span
                   className="far fa-times-circle"
                   onClick={() => onDeleteItem(task.id, t)}
                 />
+                {t?.amount && showAmount && (
+                  <span className="quantity">₹ {t?.amount}</span>
+                )}
               </p>
             );
           })}
           <div className="tasks-container-bottom-shadow list-container-bottom-shadow" />
         </div>
       )}
-      <div className="actions">
-        <div>
-          {showForm && (
-            <input
-              onKeyUp={keyFunc}
-              className="task-input task-input-2"
-              onChange={(e) => setInput(e.target.value)}
-              value={input || ""}
-              autoFocus
-            />
-          )}
-        </div>
-        <div>
-          {!showForm && (
-            <DeleteButton
-              label="Delete Task"
-              setWarn={props.setWarn}
-              onDelete={() => {
-                props.onSelectTask();
-                setTimeout(() => props.onDeleteTask(task.id), 600);
-              }}
-            />
-          )}
-          {showForm && (
-            <button className="add-task" onClick={() => setShowForm()}>
-              Cancel
-            </button>
-          )}
-          {!showForm && (
-            <button
-              className="add-task"
-              onClick={() =>
-                task?.lists?.length >= maxItems ? null : setShowForm("task")
-              }
-            >
-              + Add Item
-            </button>
-          )}
-          {showForm === "task" && (
-            <button
-              type="submit"
-              className="add-task alt-btn alt-btn-2"
-              onClick={() => {
-                if (task?.lists.length >= maxItems)
-                  props.showAlert("Max limit reached.", "error");
-                else {
-                  props.onUpdateList(task.id, input);
-                }
-              }}
-            >
-              Save
-            </button>
-          )}
-        </div>
-      </div>
+      {window.innerWidth < 768
+        ? ReactDOM.createPortal(content, document.body)
+        : content}
     </div>
   );
 }
@@ -196,6 +244,8 @@ export default function TaskEngine({
   const [selectedTask, onSelectTask] = useState(null);
   const [warn, setWarn] = useState(false);
   const [alert, setAlert] = useState({ task: null, type: "" });
+      const [showAmount, setShowAmount] = useState(false);
+
   const submitForm = () => {
     let newTask = {
       id: new Date().getTime(),
@@ -226,10 +276,20 @@ export default function TaskEngine({
   const updateList = (id, listItem) => {
     let tempTask = tasks && tasks.filter((task) => task.id === id)[0];
     let tempList = tempTask.lists;
-    if (tempList.includes(listItem)) {
-      showAlert("Item already added", "error");
+    if (tempList.filter(tL => tL.name === listItem.name).length > 0) {
+      let l = tempList.filter((tL) => tL.name === listItem.name)[0];
+      if(l.amount !== listItem.amount) {
+        l.amount = listItem.amount
+        let othertasks = tasks && tasks.filter((task) => task.id !== id);
+        let newTasks = [...othertasks, tempTask];
+        onChange(newTasks);
+        showAlert("Item updated", "success");
+      } else {
+        showAlert("Item already added", "error");
+      }
+      
     } else {
-      tempList.push(listItem);
+      tempList.push({name: listItem.name, amount: listItem.amount});
       tempTask.lists = tempList;
       let othertasks = tasks && tasks.filter((task) => task.id !== id);
       let newTasks = [...othertasks, tempTask];
@@ -347,7 +407,7 @@ export default function TaskEngine({
       </div>
       <div className="task-panes task-pane-one">
         <div className="logo-bar">
-          <h1 className="logo">Lister</h1>
+          <h1 className="logo">Listup</h1>
           <div className="flex">
             {user && saving && (
               <div style={{ marginRight: 20 }}>
@@ -358,7 +418,7 @@ export default function TaskEngine({
                 />
               </div>
             )}
-            {!user && (
+            {!user && window.innerWidth > 768 && (
               <div style={{ marginRight: 10 }}>
                 {" "}
                 To auto save and sync{" "}
@@ -366,7 +426,7 @@ export default function TaskEngine({
             )}
             <div
               className="avatar"
-              style={user ? {} : { width: 180, borderRadius: "3rem" }}
+              style={user ? {} : { width: '14rem', borderRadius: "3rem" }}
               onClick={onSignIn}
             >
               {user && (
@@ -522,6 +582,8 @@ export default function TaskEngine({
             setWarn={setWarn}
             onDeleteTask={onDeleteTask}
             onSelectTask={onSelectTask}
+            setShowAmount={setShowAmount}
+            showAmount={showAmount}
           />
         )}
       </div>

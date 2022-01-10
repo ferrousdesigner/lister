@@ -1,13 +1,13 @@
 :root {
- --background-main: #ebebeb;
-    --background-main-1: #bcbcbc;
-    --background-main-2: #b7b7b7;
-    --font-color: #3e3e3e;
-    --font-color-1: #aaaaaaaa;
-    --font-color-2: #444444;
-    --font-color-3: white;
-    --font-danger: #aa3939;
-    font-size: 14px;
+  --background-main: #ebebeb;
+  --background-main-1: #bcbcbc;
+  --background-main-2: #b7b7b7;
+  --font-color: #3e3e3e;
+  --font-color-1: #aaaaaaaa;
+  --font-color-2: #444444;
+  --font-color-3: white;
+  --font-danger: #aa3939;
+  font-size: 14px;
 }
 html,
 body {
@@ -76,7 +76,7 @@ h3 {
 .task-panes .actions .task-input {
   width: 100%;
 }
-.task-panes .add-task {
+.add-task {
   cursor: pointer;
   background-color: white;
   border-radius: 3rem;
@@ -172,15 +172,15 @@ h3 {
 
 .arrow-right {
   width: 0;
-  height: 0;
-  border-top: 60px solid transparent;
-  border-bottom: 60px solid transparent;
-  position: absolute;
-  left: 0;
-  top: 10%;
-  transform: translateY(-50%);
-  border-left: 20px solid var(--background-main);
-  animation: arrow 1s ease 1 forwards;
+    height: 0;
+    border-top: 100px solid transparent;
+    border-bottom: 100px solid transparent;
+    position: absolute;
+    left: -20px;
+    top: 12%;
+    transform: translateY(-57%);
+    /* border-left: 59px solid var(--background-main); */
+    animation: arrow 1s ease 1 forwards;
 }
 
 @keyframes arrow {
@@ -235,7 +235,7 @@ h3 {
   position: relative;
   bottom: -0.3rem;
 }
-.list-item:hover .fa-times-circle{
+.list-item:hover .fa-times-circle {
   margin-left: 0.5rem;
   opacity: 1;
   transform: rotate(0);
@@ -432,19 +432,136 @@ button.btn-trans:hover {
 .back-btn:hover {
   color: var(--font-color-2);
 }
+.task-input-3 {
+  /* font-size: 3rem; */
+  font-weight: bold;
+}
+ input {
+  font-weight: bold;
+}
+.action-row {
+  text-align: left;
+}
+.action-row h4 {
+  text-align: left;
+}
+.quantity {
+  float: right;
+}
+.toggle {
+  position: absolute;
+  bottom: 3rem;
+  left: 2rem;
+  display: flex;
+  z-index: 2;
+  align-items: center;
+}
+.toggle-btn {
+  width: 3rem;
+    height: 2rem;
+    border-radius: 0.5rem;
+    position: relative;
+    box-sizing: border-box;
+    border: none;
+    cursor: pointer;
+    margin-right: 1rem;
+
+    overflow: hidden;
+}
+.toggle-btn div {
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 2rem;
+  width: 2rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 0 0.4rem rgba(0,0,0,0.3);
+  transition: all 0.3s ease;
+}
+.toggle-active div {
+  transform: translateX(1rem);
+  background-color: #3e3e3e;
+}
+.action-row > input:last-child {
+  width: 20%;
+}
 @media only screen and (max-width: 768px) {
+  .actions > div {
+    width: 100%;
+  }
+  .actions {
+    position: fixed;
+    right: 4%;
+    width: 92%;
+    bottom: 5vmin;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: flex-end;
+  }
+  .back-btn {
+    width: 35px;
+    height: 35px;
+  }
+  .arrow-right {
+    display: none !important;
+  }
+  .tasks-container-bottom-shadow {
+    position: sticky;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    content: "";
+    height: 5vh;
+    background: none;
+  }
+  .list-container-bottom-shadow {
+    background: none;
+  }
+  .tasks-container-top-shadow {
+    position: sticky;
+    left: 0;
+    top: 0;
+    width: 100%;
+    content: "";
+    height: 5vh;
+    background: none;
+  }
+  .list-container-top-shadow {
+    background: none;
+  }
+  .error .list-container-top-shadow {
+    background: none;
+  }
+  .error .list-container-bottom-shadow {
+    background: none;
+  }
+  .task-panes .actions {
+    position: fixed;
+    left: 4%;
+    width: 94%;
+    bottom: 1rem;
+  }
+  :root {
+    font-size: 10px !important;
+  }
   .back-btn {
     display: flex;
   }
   .task-engine {
     display: block;
+    overflow: hidden;
   }
   .task-panes {
     width: 100%;
+    overflow-x: hidden;
+    height: auto;
   }
   .task-pane-two {
     position: fixed;
     left: 0;
     top: 0;
+    min-height: 100vh;
   }
 }
